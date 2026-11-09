@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationPackage SchemaVersion="1.0"
+                    AutodeskProduct="AutoCAD"
+                    Name="NEXO"
+                    AppVersion="1.0.56"
+                    ProductCode="{B7DE623A-2AE0-497A-A5BB-94AB7FA8B8C1}"
+                    UpgradeCode="{B780AE5A-9D02-4E59-ABBE-61EE39D542B9}"
+                    Description="Plugin NEXO para AutoCAD 2027">
+  <CompanyDetails Name="NEXO" />
+  <Components>
+    <ComponentEntry AppName="Nexo.AutoCAD"
+                    Version="1.0.56"
+                    ModuleName="./Contents/Windows/2027/Nexo.AutoCAD_1_0_56.dll"
+                    AppDescription="Ferramentas NEXO para AutoCAD"
+                    LoadOnAutoCADStartup="True"
+                    LoadOnCommandInvocation="True">
+      <RuntimeRequirements OS="Win64" Platform="AutoCAD" SeriesMin="R26.0" SeriesMax="R26.0" />
+      <Commands GroupName="NEXO">
+        <Command Global="SL" Local="SL" />
+        <Command Global="EL2PL" Local="EL2PL" />
+        <Command Global="NBURST" Local="NBURST" />
+        <Command Global="BLOCKREPLACERANDOM" Local="BLOCKREPLACERANDOM" />
+        <Command Global="CLPV" Local="CLPV" />
+        <Command Global="QB" Local="QB" />
+        <Command Global="LDL" Local="LDL" />
+        <Command Global="ISOMETRICO" Local="ISOMETRICO" />
+        <Command Global="DET" Local="DET" />
+        <Command Global="DETLEVE" Local="DETLEVE" />
+        <Command Global="DETLEVEISO" Local="DETLEVEISO" />
+        <Command Global="DETISOPAREDES" Local="DETISOPAREDES" />
+      </Commands>
+    </ComponentEntry>
+  </Components>
+</ApplicationPackage>

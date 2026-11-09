@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Version>1.0.56</Version>
+    <AssemblyName>Nexo.AutoCAD_1_0_56</AssemblyName>
+    <RootNamespace>Nexo.AutoCAD</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <AutoCADInstallDir Condition="'$(AutoCADInstallDir)' == ''">C:\Program Files\Autodesk\AutoCAD 2027</AutoCADInstallDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="accoremgd">
+      <HintPath>$(AutoCADInstallDir)\accoremgd.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="acdbmgd">
+      <HintPath>$(AutoCADInstallDir)\acdbmgd.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="acmgd">
+      <HintPath>$(AutoCADInstallDir)\acmgd.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="AdWindows">
+      <HintPath>$(AutoCADInstallDir)\AdWindows.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <None Include="PackageContents.xml" CopyToOutputDirectory="Never" />
+  </ItemGroup>
+
+  <Target Name="StageAutoCADBundle" AfterTargets="Build">
+    <PropertyGroup>
+      <BundleRoot>$(MSBuildProjectDirectory)\..\..\dist\Nexo.bundle</BundleRoot>
+      <BundleContent>$(BundleRoot)\Contents\Windows\2027</BundleContent>
+    </PropertyGroup>
+    <MakeDir Directories="$(BundleContent)" />
+    <ItemGroup>
+      <RibbonIconFiles Include="$(MSBuildProjectDirectory)\Resources\*.png" />
+      <BlockLibraryFiles Include="$(MSBuildProjectDirectory)\Resources\*.dwg" />
+      <StaleBundleFiles Include="$(BundleContent)\Nexo.AutoCAD_*" Exclude="$(BundleContent)\$(AssemblyName).dll;$(BundleContent)\$(AssemblyName).deps.json" />
+    </ItemGroup>
+    <Delete Files="@(StaleBundleFiles)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BundleContent)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(TargetDir)$(AssemblyName).deps.json" DestinationFolder="$(BundleContent)" SkipUnchangedFiles="true" Condition="Exists('$(TargetDir)$(AssemblyName).deps.json')" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\PackageContents.xml" DestinationFolder="$(BundleRoot)" SkipUnchangedFiles="true" />
+    <MakeDir Directories="$(BundleContent)\Resources" />
+    <Copy SourceFiles="@(RibbonIconFiles)" DestinationFolder="$(BundleContent)\Resources" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(BlockLibraryFiles)" DestinationFolder="$(BundleContent)\Resources" SkipUnchangedFiles="true" />
+  </Target>
+</Project>

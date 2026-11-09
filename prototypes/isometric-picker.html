@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NEXO — Orientação isométrica</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #f4f5f7;
+      --surface: #ffffff;
+      --surface-muted: #f8f9fb;
+      --ink: #20242b;
+      --muted: #68717d;
+      --line: #c8ced6;
+      --cube: #e4e8ed;
+      --cube-top: #eef1f5;
+      --cube-hover: #e3d7f7;
+      --accent: #8250c8;
+      --accent-strong: #6d39b5;
+      --accent-soft: #f0e9fa;
+      --shadow: 0 18px 52px rgb(20 27 39 / 17%);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --page: #20242a;
+      --surface: #2a2f36;
+      --surface-muted: #252a31;
+      --ink: #eef1f5;
+      --muted: #aeb7c3;
+      --line: #515a66;
+      --cube: #454e5a;
+      --cube-top: #515c69;
+      --cube-hover: #514265;
+      --accent: #b68af0;
+      --accent-strong: #d0b4fa;
+      --accent-soft: #3b304b;
+      --shadow: 0 18px 52px rgb(0 0 0 / 38%);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: var(--page);
+      color: var(--ink);
+      font: 14px/1.4 "Segoe UI", Arial, sans-serif;
+      transition: background .18s ease, color .18s ease;
+    }
+    .dialog {
+      width: min(980px, 100%);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .titlebar {
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px 0 17px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .brand { display: flex; align-items: center; gap: 9px; }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      background: var(--accent);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: -.5px;
+    }
+    .title { color: var(--ink); font-weight: 600; }
+    .theme-toggle {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 6px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 17px;
+    }
+    .theme-toggle:hover { background: var(--surface-muted); color: var(--ink); }
+    main { padding: 20px 24px 16px; }
+    .diagram { width: 100%; display: block; overflow: visible; }
+    .diagram text { font-family: "Segoe UI", Arial, sans-serif; user-select: none; }
+    .section-label { fill: var(--muted); font-size: 12px; font-weight: 650; letter-spacing: .08em; }
+    .plant-boundary { fill: var(--surface); stroke: var(--accent); stroke-width: 3; }
+    .arrow-shaft { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+    .arrow-head { fill: var(--accent); }
+    .cube-face { stroke: #717b88; stroke-width: 2.2; stroke-linejoin: round; cursor: pointer; transition: fill .14s ease, stroke .14s ease, stroke-width .14s ease; }
+    .cube-face.top { fill: var(--cube-top); }
+    .cube-face.side { fill: var(--cube); }
+    .cube-face:hover, .cube-face.previewing { fill: var(--cube-hover); stroke: var(--accent); stroke-width: 3; }
+    .cube-face.selected { fill: var(--cube-hover); stroke: var(--accent-strong); stroke-width: 3.5; }
+    .cube-face:focus { outline: none; }
+    .cube-face:focus-visible { stroke: var(--accent-strong); stroke-width: 4; }
+    .preview-plane { fill: var(--accent); fill-opacity: .11; stroke: var(--accent); stroke-width: 2.5; stroke-linejoin: round; pointer-events: none; }
+    .preview-arrow-shaft { fill: none; stroke: var(--accent-strong); stroke-width: 3.2; stroke-linecap: round; pointer-events: none; }
+    .preview-arrow-head { fill: var(--accent-strong); pointer-events: none; }
+    .cube-edge { fill: none; stroke: #717b88; stroke-width: 2.2; stroke-linejoin: round; pointer-events: none; }
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-top: 7px;
+      padding: 12px 0 0;
+      border-top: 1px solid var(--line);
+    }
+    .rotation {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .rotation-label { color: var(--muted); white-space: nowrap; }
+    .rotate-buttons { display: flex; gap: 5px; }
+    button { font: inherit; }
+    .rotate-button {
+      width: 34px;
+      height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--ink);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 17px;
+      line-height: 1;
+    }
+    .rotate-button:hover { border-color: var(--accent); background: var(--accent-soft); }
+    .angle { min-width: 46px; color: var(--ink); font-variant-numeric: tabular-nums; }
+    .status { min-height: 20px; margin: 12px 0 0; color: var(--muted); font-size: 12px; }
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 9px;
+      padding: 0 24px 18px;
+    }
+    .action {
+      min-width: 94px;
+      height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--ink);
+      background: var(--surface);
+      cursor: pointer;
+    }
+    .action:hover:not(:disabled) { background: var(--surface-muted); }
+    .action.primary { border-color: var(--accent); background: var(--accent); color: #fff; font-weight: 600; }
+    .action.primary:hover:not(:disabled) { background: var(--accent-strong); }
+    .action:disabled { cursor: default; opacity: .45; }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translate(-50%, 10px);
+      padding: 9px 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    @media (max-width: 720px) {
+      body { padding: 12px; }
+      main { padding: 14px 14px 12px; }
+      footer { padding: 0 14px 14px; }
+      .control-row { align-items: flex-start; flex-direction: column; gap: 5px; }
+      .rotation { flex-wrap: wrap; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
+    <div class="titlebar">
+      <div class="brand"><span class="brand-mark">N</span><span class="title" id="dialog-title">Orientação isométrica</span></div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema" title="Alternar tema">◐</button>
+    </div>
+    <main>
+      <svg class="diagram" viewBox="0 0 900 490" role="img" aria-label="Planta quadrada com seta e cubo isométrico de três faces selecionáveis">
+        <text class="section-label" x="190" y="74" text-anchor="middle">PLANTA</text>
+        <text class="section-label" x="640" y="35" text-anchor="middle">VISTA ISOMÉTRICA</text>
+
+        <rect class="plant-boundary" x="90" y="125" width="200" height="200" rx="1" />
+        <path class="arrow-shaft" d="M190 281 L190 185" />
+        <path class="arrow-head" d="M190 169 L182.32 185 L197.68 185 Z" />
+
+        <g id="cube">
+          <polygon class="cube-face top" data-view="top" tabindex="0" role="button" aria-label="Selecionar face superior" points="640,65 790,150 640,235 490,150" />
+          <polygon class="cube-face side" data-view="left" tabindex="0" role="button" aria-label="Selecionar face lateral esquerda" points="490,150 640,235 640,425 490,340" />
+          <polygon class="cube-face side" data-view="right" tabindex="0" role="button" aria-label="Selecionar face lateral direita" points="640,235 790,150 790,340 640,425" />
+          <polygon class="preview-plane" id="previewPlane" points="" visibility="hidden" />
+          <path class="preview-arrow-shaft" id="previewArrowShaft" d="" visibility="hidden" />
+          <path class="preview-arrow-head" id="previewArrowHead" d="" visibility="hidden" />
+          <path class="cube-edge" d="M490 150 L640 235 L790 150 M640 235 L640 425" />
+        </g>
+      </svg>
+
+      <div class="control-row">
+        <div class="rotation" aria-label="Orientação da planta na face selecionada">
+          <span class="rotation-label">Giro no cubo</span>
+          <output class="angle" id="angleReadout" aria-live="polite">0°</output>
+        </div>
+        <span class="rotation-label" id="selectionHint">Passe o cursor sobre uma face</span>
+      </div>
+    </main>
+    <footer>
+      <button class="action" id="cancelButton" type="button">Cancelar</button>
+      <button class="action primary" id="applyButton" type="button" disabled>Aplicar</button>
+    </footer>
+  </section>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const faces = {
+        top:   { center: [640, 150], ex: [75, 42.5], ey: [-75, 42.5] },
+        left:  { center: [565, 287.5], ex: [75, 42.5], ey: [0, 95] },
+        right: { center: [715, 287.5], ex: [75, -42.5], ey: [0, 95] }
+      };
+      const faceNames = { top: "face superior", left: "face lateral esquerda", right: "face lateral direita" };
+      const planeScale = 0.64;
+      let rotation = 0;
+      let hoveredFace = null;
+      let selectedFace = null;
+      let toastTimer;
+
+      const faceElements = [...document.querySelectorAll(".cube-face")];
+      const previewPlane = document.getElementById("previewPlane");
+      const previewArrowShaft = document.getElementById("previewArrowShaft");
+      const previewArrowHead = document.getElementById("previewArrowHead");
+      const angleReadout = document.getElementById("angleReadout");
+      const selectionHint = document.getElementById("selectionHint");
+      const applyButton = document.getElementById("applyButton");
+
+      function pointText(point) { return `${point[0].toFixed(2)},${point[1].toFixed(2)}`; }
+
+      function arrowGeometry(center, vx, vy, headLength) {
+        const length = Math.hypot(vx, vy) || 1;
+        const ux = vx / length;
+        const uy = vy / length;
+        const tail = [center[0] - vx, center[1] - vy];
+        const tip = [center[0] + vx, center[1] + vy];
+        const base = [tip[0] - ux * headLength, tip[1] - uy * headLength];
+        const halfWidth = headLength * 0.48;
+        const perp = [-uy * halfWidth, ux * halfWidth];
+        const wingA = [base[0] + perp[0], base[1] + perp[1]];
+        const wingB = [base[0] - perp[0], base[1] - perp[1]];
+        return {
+          shaft: `M${pointText(tail)} L${pointText(base)}`,
+          head: `M${pointText(tip)} L${pointText(wingA)} L${pointText(wingB)} Z`
+        };
+      }
+
+      function planePoints(face) {
+        const { center, ex, ey } = faces[face];
+        const sx = ex.map(value => value * planeScale);
+        const sy = ey.map(value => value * planeScale);
+        return [
+          [center[0] - sx[0] - sy[0], center[1] - sx[1] - sy[1]],
+          [center[0] + sx[0] - sy[0], center[1] + sx[1] - sy[1]],
+          [center[0] + sx[0] + sy[0], center[1] + sx[1] + sy[1]],
+          [center[0] - sx[0] + sy[0], center[1] - sx[1] + sy[1]]
+        ];
+      }
+
+      function updateFacePreview(face, previewRotation) {
+        if (!face) {
+          previewPlane.setAttribute("visibility", "hidden");
+          previewArrowShaft.setAttribute("visibility", "hidden");
+          previewArrowHead.setAttribute("visibility", "hidden");
+          return;
+        }
+        const points = planePoints(face);
+        previewPlane.setAttribute("points", points.map(pointText).join(" "));
+        const { center, ex, ey } = faces[face];
+        const radians = previewRotation * Math.PI / 180;
+        const localX = Math.sin(radians);
+        const localY = -Math.cos(radians);
+        const projectedX = ex[0] * localX + ey[0] * localY;
+        const projectedY = ex[1] * localX + ey[1] * localY;
+        const vector = [projectedX * 0.30, projectedY * 0.30];
+        const arrow = arrowGeometry(center, vector[0], vector[1], 10);
+        previewArrowShaft.setAttribute("d", arrow.shaft);
+        previewArrowHead.setAttribute("d", arrow.head);
+        previewPlane.setAttribute("visibility", "visible");
+        previewArrowShaft.setAttribute("visibility", "visible");
+        previewArrowHead.setAttribute("visibility", "visible");
+      }
+
+      function render() {
+        angleReadout.value = `${rotation}°`;
+        angleReadout.textContent = `${rotation}°`;
+        faceElements.forEach(element => {
+          const face = element.dataset.view;
+          element.classList.toggle("selected", face === selectedFace);
+          element.classList.toggle("previewing", face === hoveredFace && face !== selectedFace);
+          element.setAttribute("aria-label", face === selectedFace
+            ? `Face ${faceNames[face]} selecionada. Clique novamente para girar 90 graus.`
+            : `Selecionar ${faceNames[face]}`);
+        });
+        const previewFace = hoveredFace || selectedFace;
+        const previewRotation = hoveredFace && hoveredFace !== selectedFace ? 0 : rotation;
+        updateFacePreview(previewFace, previewRotation);
+        applyButton.disabled = !selectedFace;
+        if (selectedFace) {
+          selectionHint.textContent = "Clique novamente na face para girar 90°";
+        } else if (hoveredFace) {
+          selectionHint.textContent = "Prévia — clique para selecionar";
+        } else {
+          selectionHint.textContent = "Passe o cursor para pré-visualizar";
+        }
+      }
+
+      faceElements.forEach(element => {
+        const face = element.dataset.view;
+        element.addEventListener("pointerenter", () => { hoveredFace = face; render(); });
+        element.addEventListener("pointerleave", () => {
+          hoveredFace = null;
+          render();
+        });
+        element.addEventListener("click", () => {
+          if (selectedFace === face) {
+            rotation = (rotation + 90) % 360;
+          } else {
+            selectedFace = face;
+            rotation = 0;
+          }
+          render();
+        });
+        element.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            if (selectedFace === face) {
+              rotation = (rotation + 90) % 360;
+            } else {
+              selectedFace = face;
+              rotation = 0;
+            }
+            render();
+          }
+        });
+        element.addEventListener("focus", () => { hoveredFace = face; render(); });
+        element.addEventListener("blur", () => { hoveredFace = null; render(); });
+      });
+
+      document.getElementById("themeToggle").addEventListener("click", () => {
+        const root = document.documentElement;
+        root.dataset.theme = root.dataset.theme === "light" ? "dark" : "light";
+      });
+      document.getElementById("cancelButton").addEventListener("click", () => {
+        selectedFace = null;
+        hoveredFace = null;
+        rotation = 0;
+        render();
+      });
+      applyButton.addEventListener("click", () => {
+        const toast = document.getElementById("toast");
+        toast.textContent = `Prévia confirmada — ${faceNames[selectedFace]}, ${rotation}°`;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

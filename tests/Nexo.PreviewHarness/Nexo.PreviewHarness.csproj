@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <UseWPF>true</UseWPF>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\src\Nexo.AutoCAD\WallPreviewDialog.cs" Link="WallPreviewDialog.cs" />
+    <Compile Include="..\..\src\Nexo.AutoCAD\WallFootprintOptimizer.cs" Link="WallFootprintOptimizer.cs" />
+    <Compile Include="..\..\src\Nexo.AutoCAD\WallFootprintUnion.cs" Link="WallFootprintUnion.cs" />
+  </ItemGroup>
+</Project>

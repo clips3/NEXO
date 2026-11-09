@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <AssemblyName>Nexo.WallHarness</AssemblyName>
+    <Nullable>disable</Nullable>
+    <UseWPF>true</UseWPF>
+    <AutoCADInstallDir Condition="'$(AutoCADInstallDir)' == ''">C:\Program Files\Autodesk\AutoCAD 2027</AutoCADInstallDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="accoremgd"><HintPath>$(AutoCADInstallDir)\accoremgd.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="acdbmgd"><HintPath>$(AutoCADInstallDir)\acdbmgd.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="acmgd"><HintPath>$(AutoCADInstallDir)\acmgd.dll</HintPath><Private>false</Private></Reference>
+    <Compile Include="..\..\src\Nexo.AutoCAD\WallDetection.cs" Link="WallDetection.cs" />
+    <Compile Include="..\..\src\Nexo.AutoCAD\WallFootprintOptimizer.cs" Link="WallFootprintOptimizer.cs" />
+    <Compile Include="..\..\src\Nexo.AutoCAD\WallFootprintUnion.cs" Link="WallFootprintUnion.cs" />
+    <Compile Include="..\..\src\Nexo.AutoCAD\IsometricCompositeWalls.cs" Link="IsometricCompositeWalls.cs" />
+    <Compile Include="..\..\src\Nexo.AutoCAD\IsometricOpeningInserter.cs" Link="IsometricOpeningInserter.cs" />
+    <Compile Include="..\..\src\Nexo.AutoCAD\IsometricWallInserter.cs" Link="IsometricWallInserter.cs" />
+    <Compile Include="..\..\src\Nexo.AutoCAD\IsometricSlabInserter.cs" Link="IsometricSlabInserter.cs" />
+    <Compile Include="..\..\src\Nexo.AutoCAD\WallBlockLibrary.cs" Link="WallBlockLibrary.cs" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,24 @@
+# Compilação e IDE
+bin/
+obj/
+/dist/
+.vs/
+*.user
+*.suo
+__pycache__/
+
+# Arquivos locais e diagnósticos
+/ErrorReports/
+*.log
+*.dmp
+.env
+.env.*
+
+# Desenhos locais do AutoCAD
+*.dwg
+*.bak
+*.dwl
+*.dwl2
+*.sv$
+!/src/Nexo.AutoCAD/Resources/NexoOpeningBlocks.dwg
+!/src/Nexo.AutoCAD/Resources/NexoWallBlocks.dwg
